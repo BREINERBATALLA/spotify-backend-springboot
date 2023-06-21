@@ -4,10 +4,13 @@ import com.example.spotify.dto.request.UserDto;
 import com.example.spotify.dto.request.UserRegisterDTO;
 import com.example.spotify.dto.response.ResponseUserDto;
 import com.example.spotify.dto.response.SongResponseDto;
+import com.example.spotify.entity.Song;
 import com.example.spotify.entity.User;
+import com.example.spotify.exception.SongNotFoundException;
 import com.example.spotify.exception.UserNotFoundException;
 import com.example.spotify.mapper.SongMapper;
 import com.example.spotify.mapper.UserMapper;
+import com.example.spotify.repository.SongRepository;
 import com.example.spotify.repository.UserRepository;
 import com.example.spotify.security.Role;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,9 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final SongRepository songRepository;
+
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     private final SongMapper songMapper = Mappers.getMapper(SongMapper.class);
@@ -71,11 +77,18 @@ public class UserService {
                 .orElseThrow(()-> new UserNotFoundException("User with id: "+ "wasn't found"));
     }
 
-    public void deleteSongOfListFavoriteSongs(Integer idSong) {
-
+    public void deleteSongOfListFavoriteSongs(Integer idUser, Integer idSong) {
+        User userFound = userRepository.findById(idUser).orElseThrow(()-> new UserNotFoundException("User with id "+ idUser+ "wasn't found "));
+        Song song = songRepository.findById(idSong).orElseThrow(()-> new SongNotFoundException("Song with id "+ idSong+ "wasn't found"));
+        userFound.getFavoriteSongs().remove(song);
+        userRepository.save(userFound);
     }
 
-    public void addSongtoListFavoriteSongs(Integer idSong) {
+    public void addSongtoListFavoriteSongs(Integer idUser, Integer idSong) {
+        User userFound = userRepository.findById(idUser).orElseThrow(()-> new UserNotFoundException("User with id "+ idUser+ "wasn't found "));
+        Song song = songRepository.findById(idSong).orElseThrow(()-> new SongNotFoundException("Song with id "+ idSong+ "wasn't found"));
+        userFound.getFavoriteSongs().add(song);
+        userRepository.save(userFound);
 
     }
 

@@ -20,7 +20,6 @@ public class AwsConfig {
     @Value("${aws.secretKey}")
     private String accessSecret;
 
-
     private AwsCredentialsProvider createCredentialsProvider() {
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, accessSecret);
         return StaticCredentialsProvider.create(credentials);
