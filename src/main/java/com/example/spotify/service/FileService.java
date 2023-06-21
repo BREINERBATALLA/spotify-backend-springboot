@@ -1,10 +1,14 @@
 package com.example.spotify.service;
 
-import com.example.spotify.dto.response.FileResponseDTO;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
+import com.example.spotify.dto.response.FileDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,43 +20,59 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class FileService {
 
     private final S3Client s3Client;
-    @Value("${aws.s3.bucket-name}")
+    @Value("${aws.bucket-name}")
     private String bucketName;
 
-    public FileResponseDTO uploadAudio(MultipartFile file) throws IOException, InvalidDataException, UnsupportedTagException {
-        String keyS3 = file.getOriginalFilename();
+    public FileDto uploadAudio(MultipartFile file) {
+        String nameFile = LocalDate.now().toString()+file.getOriginalFilename();
 
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key(keyS3)
+                .key(nameFile)
                 .build();
-
-        s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-
-        File tempFile = File.createTempFile("temp", ".mp3");
-
-        // Guarda el contenido del MultipartFile en el archivo temporal
-        file.transferTo(tempFile);
-
-        Mp3File mp3File = new Mp3File(tempFile);
-        Long duration;
-
-        if(mp3File.hasId3v1Tag()) {
-           duration = mp3File.getLengthInSeconds();
-        } else{
-            duration = 0L;
+        try {
+            s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        return new FileResponseDTO(file.getOriginalFilename(), duration);
+        File tempFile;
+        try {
+            tempFile = File.createTempFile("temp", ".mp3");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Guarda el contenido del MultipartFile en el archivo temporal
+        try {
+            file.transferTo(tempFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Long duration = 0L;
+
+        try {
+            AudioFile audioFile = AudioFileIO.read(tempFile);
+            duration = Integer.toUnsignedLong(audioFile.getAudioHeader().getTrackLength());
+            tempFile.delete();
+            System.out.println("Duration (seconds): " + duration);
+        } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
+            e.printStackTrace();
+        }
+
+        log.info("Pruebaa na ma");
+        return new FileDto(nameFile, duration);
     }
 
-    public String deleteAudio(String fileName) {
+    public void deleteAudio(String fileName) {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
@@ -60,12 +80,14 @@ public class FileService {
 
         DeleteObjectResponse deleteObjectResponse = s3Client.deleteObject(deleteObjectRequest);
 
-        // Verificar si la eliminación fue exitosa
+        /** Verificar si la eliminación fue exitosa
         if (deleteObjectResponse.sdkHttpResponse().isSuccessful()) {
             return "El archivo de audio se eliminó correctamente";
         } else {
             return "No se pudo eliminar el archivo de audio";
         }
+         */
+
     }
 
 

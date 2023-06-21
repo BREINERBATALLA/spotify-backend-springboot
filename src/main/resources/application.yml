@@ -1,16 +1,29 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/mydatabase
-    username: myusername
-    password: mypassword
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
+    url: jdbc:mysql://localhost:3306/prueba?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: root
   jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+
+server:
+  port: 8081
 
 aws:
-  accessKey: YOUR_ACCESS_KEY
-  secretKey: YOUR_SECRET_KEY
-  region: YOUR_REGION
+  accessKey: AKIAZHDWQON4QO7QT6PI
+  secretKey: ulGdieb6oMLiPcS7QY/yq2oeVBYgYaa/q9G3MmVw
+  region: us-east-1
+  bucket-name: songs-spotify-uv-www
+  topic-arn: arn:aws:sns:us-east-1:633756218233:new-song-www

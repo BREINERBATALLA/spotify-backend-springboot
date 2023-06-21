@@ -1,5 +1,6 @@
 package com.example.spotify.entity;
 
+import com.example.spotify.security.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,6 +8,8 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "user")
 @Entity
@@ -16,15 +19,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "rol")
-    private String rol;
-
     @Email(message = "You must to type a valid email")
     @Column(name = "email")
     private String email;
 
     @Column(name = "fullname")
-    private String fullName;
+    private String username;
 
     @NotBlank(message = "This field can't be blank")
     @Column(name = "password")
@@ -34,8 +34,15 @@ public class User {
     @CreationTimestamp
     private LocalDate createAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @ManyToMany
+    @JoinTable(name = "user_song",
+    joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "song_id", referencedColumnName = "id"))
+    private List<Song> favoriteSongs = new ArrayList<>();
+
+
 
 }

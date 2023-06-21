@@ -31,6 +31,19 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.5.5.Final</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.5.5.Final</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -52,11 +65,21 @@
             <version>2.17.87</version>
         </dependency>
         <dependency>
-            <groupId>com.mpatric</groupId>
-            <artifactId>mp3agic</artifactId>
-            <version>0.9.1</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sns</artifactId>
+            <version>2.16.83</version>
         </dependency>
-            <!-- Otras dependencias de tu proyecto -->
+
+        <!-- https://mvnrepository.com/artifact/org/jaudiotagger -->
+        <dependency>
+            <groupId>org</groupId>
+            <artifactId>jaudiotagger</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+
+        <!-- Otras dependencias de tu proyecto -->
 
 
     </dependencies>
