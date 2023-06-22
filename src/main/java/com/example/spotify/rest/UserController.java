@@ -19,20 +19,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final NotificationService notificationService;
     private final UserService userService;
-
-    @PostMapping("/register")
-    public ResponseEntity<ResponseUserDto> save(@RequestBody UserRegisterDTO userRegisterDTO) {
-        notificationService.subscribeUser(userRegisterDTO.email());
-        return new ResponseEntity<>(userService.registerUser(userRegisterDTO), HttpStatus.CREATED);
-    }
-
-    @PostMapping("/register/admin")
-    public ResponseEntity<ResponseUserDto> saveUserByAdmin(UserRegisterDTO user) {
-        notificationService.subscribeUser(user.email());
-        return new ResponseEntity<>(userService.registerUserByAdmin(user), HttpStatus.CREATED);
-    }
 
     @GetMapping("/favorite-songs")
     public ResponseEntity<List<SongResponseDto>> getFavoriteSongs(){

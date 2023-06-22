@@ -1,6 +1,6 @@
 package com.example.spotify.dto.request;
 
-import com.example.spotify.security.Role;
+import com.example.spotify.config.security.Role;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;

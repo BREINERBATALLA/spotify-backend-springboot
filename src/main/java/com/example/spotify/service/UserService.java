@@ -1,7 +1,9 @@
 package com.example.spotify.service;
 
+import com.example.spotify.dto.request.AuthUserDto;
 import com.example.spotify.dto.request.UserDto;
 import com.example.spotify.dto.request.UserRegisterDTO;
+import com.example.spotify.dto.response.JwtResponseDto;
 import com.example.spotify.dto.response.ResponseUserDto;
 import com.example.spotify.dto.response.SongResponseDto;
 import com.example.spotify.entity.Song;
@@ -12,12 +14,13 @@ import com.example.spotify.mapper.SongMapper;
 import com.example.spotify.mapper.UserMapper;
 import com.example.spotify.repository.SongRepository;
 import com.example.spotify.repository.UserRepository;
-import com.example.spotify.security.Role;
+import com.example.spotify.config.security.Role;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -31,38 +34,15 @@ public class UserService {
 
     private final SongRepository songRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     private final SongMapper songMapper = Mappers.getMapper(SongMapper.class);
 
-    //este va en Login al igual que log-in y log-out.
-    public ResponseUserDto registerUser(UserRegisterDTO user)  {
-        User newUser = new User();
-        newUser.setEmail(user.email());
-        newUser.setUsername(user.username());
-        String passwordGenerated = generateRandomPassword(10);
-        newUser.setPassword(passwordGenerated);
-        newUser.setRole(Role.USER);
-        userRepository.save(newUser);
-        return new ResponseUserDto(passwordGenerated);
-    }
-
-    public ResponseUserDto registerUserByAdmin(UserRegisterDTO userDTO) {
-        User newUser = new User();
-        newUser.setEmail(userDTO.email());
-        newUser.setUsername(userDTO.username());
-        String passwordGenerated = generateRandomPassword(12);
-        newUser.setPassword(passwordGenerated);
-        newUser.setRole(Role.ADMIN);
-        userRepository.save(newUser);
-        return new ResponseUserDto(passwordGenerated);
-    }
-
-
     public void deleteUser(Integer idUser) {
         userRepository.deleteById(idUser);
     }
-
 
     public UserDto getUserById(Integer id) {
         return userRepository.findById(id)
@@ -96,26 +76,7 @@ public class UserService {
         return userRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.ASC, field)));
     }
 
-    // Método para generar una contraseña alfanumérica aleatoria de una longitud específica
-    private String generateRandomPassword(int len)
-    {
-        // Rango ASCII – alfanumérico (0-9, a-z, A-Z)
-        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-        SecureRandom random = new SecureRandom();
-        StringBuilder sb = new StringBuilder();
-
-        // cada iteración del bucle elige aleatoriamente un carácter del dado
-        // rango ASCII y lo agrega a la instancia `StringBuilder`
-
-        for (int i = 0; i < len; i++)
-        {
-            int randomIndex = random.nextInt(chars.length());
-            sb.append(chars.charAt(randomIndex));
-        }
-
-        return sb.toString();
-    }
 
 
 }

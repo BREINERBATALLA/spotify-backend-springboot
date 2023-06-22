@@ -13,7 +13,7 @@ public interface UserMapper {
 
     UserDto toUserDto(User user);
 
-    @Mapping(target = "favoriteSongs", ignore = true)
+    @Mapping(target = "authorities", ignore = true)
     User toUser(UserDto userDto);
 
 
