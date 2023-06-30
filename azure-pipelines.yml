@@ -1,0 +1,35 @@
+
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      mavenOptions: '-Xmx3072m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.17'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'package'
+  
+  - task: Docker@2
+    inputs:
+      repository: '$(repositoryName)'
+      command: 'build'
+      Dockerfile: '**/Dockerfile'
+  
+  - task: ECRPushImage@1
+    inputs:
+      awsCredentials: 'AWSConnection'
+      regionName: 'us-east-1'
+      imageSource: 'imageid'
+      sourceImageId: '$(repositoryName):$(Build.BuildId)'
+      repositoryName: '$(repositoryName)'
+      pushTag: '$(Build.BuildId)'
+      forceDockerNamingConventions: true
