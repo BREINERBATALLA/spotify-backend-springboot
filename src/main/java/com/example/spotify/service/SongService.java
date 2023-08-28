@@ -8,6 +8,7 @@ import com.example.spotify.exception.SongNotFoundException;
 import com.example.spotify.mapper.SongMapper;
 import com.example.spotify.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class SongService {
 
     private final SongRepository songRepository;
@@ -31,7 +33,7 @@ public class SongService {
         song.setDuration(fileDTO.duration());
         //Obtener usuario logueado para enviar nombre en el subject..
         notificationService.publishMessage("Song: "+ songDto.nameSong() + "\n"+ "By:" + songDto.artistName() ,"Hi "+ "BreiSpotify has uploaded a new song <3" );
-
+        log.info(song.toString());
         return songMapper.toSongResponseDto(songRepository.save(song));
 
     }

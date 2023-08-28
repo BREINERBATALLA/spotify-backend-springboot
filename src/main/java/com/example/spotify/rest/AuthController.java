@@ -25,7 +25,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authenticationService.registerUser(userRegisterDTO));
     }
-    //tocara quitar este método..
+    //tocara quitar este método.. solo dejar registrar users.
     @PostMapping(path = "/register-admin")
     public ResponseEntity<ResponseUserDto> registerByAdmin(
             @RequestBody UserRegisterDTO userRegisterDTO

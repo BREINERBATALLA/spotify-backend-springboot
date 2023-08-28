@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         userEmail = jwtService.extractUsername(jwtToken);
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             //si no esta autenticado, tengo que validar la identidad del usuario con la bbdd
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail); //la imp de la interfaz impl este método
             if(jwtService.isTokenValid(jwtToken, userDetails)) {
                 //si es valido, actualizo securityContext, le enviamos dicho objecto Authentication
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

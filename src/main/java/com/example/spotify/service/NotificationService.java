@@ -24,7 +24,7 @@ public class NotificationService {
                 .build();
         snsClient.subscribe(subscribeRequest);
     }
-
+//ver SS clase para enviar los mensajes...
     public void publishMessage(String message, String subject) {
         PublishRequest publishRequest = PublishRequest.builder()
                 .topicArn(topicArn)

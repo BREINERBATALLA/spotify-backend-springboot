@@ -36,7 +36,7 @@ public class JwtService {
                 .parserBuilder()
                 .setSigningKey(getSignIngKey()) //la necesitamos para decodificar el token.
                 .build() //ya con el objeto del token, obtenemos los claims con el parse
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();  //del claim que es la info en json del token, obtenemos el body(payload)
 
     }
